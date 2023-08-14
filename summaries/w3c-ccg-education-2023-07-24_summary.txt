@@ -1,0 +1,3 @@
+
+
+The W3C Credentials Community Group requires members to sign an IPR agreement and join the group. Plug Fest Three focuses on wallet names and interactions with wallets, and Chappie.io provides documentation on how to integrate with it. Verifiable credentials and presentations are used to share credentials with a verifier playground, and DID Piece is used to support DID T. OID for VCI supports multi-shot presentations, but OID for VP does not yet. Documentation and technical information for earning a Plug Fest Two badge is available, and an invitation to join a plug fest to verify and create solutions for open batch is extended to participants.

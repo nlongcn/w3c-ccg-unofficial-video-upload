@@ -16,7 +16,7 @@ from langchain.docstore.document import Document
 from langchain.chains.summarize import load_summarize_chain
 import warnings
 
-OPENAI_API_KEY = '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'
+OPENAI_API_KEY = 'your-key-here'
 MIN_WORDS = 20
 MAX_WORDS = 80
 CHUNK_LENGTH = 5

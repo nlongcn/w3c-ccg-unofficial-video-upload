@@ -3,17 +3,18 @@ Tools to download videos from a repository, transcribe them using whisper, summa
 
 ### There are two lists:
 - Official list of videos provided by a W3C CCG standards committee editor or chair (updated 
-- List of videos already scrapped.  
+- List of videos already scrapped.
+Both lists can be found in the download_script folder. 
 
 ### There are three folders for videos
 - ccg_videos_new, videos that have been downloaded but not yet summarized
-- ccg_videos_new/ccg_videos_complete, videos that have been download, transcribed and summarised but not yet uploaded to youtube
+- ccg_videos_new\ccg_videos_complete, videos that have been download, transcribed and summarised but not yet uploaded to youtube
 - ccg_videos_old, videos that have been downloaded, summarized and uploaded to youtube
 
 ### There are three scripts
-- ccg_download.py, downloads new videos into ccg_videos_new
-- summarize_chatgpt.py, takes videos from ccg_videos_new, transcribes and summarises them, moves them into ccg_video_complete
-- ccg_upload_openai_new_py, takes videos from ccg_videos_complete and moves them into ccg_videos_old, once uploaded to YouTube
+- download_script\ccg_download.py, downloads new videos into ccg_videos_new
+- transcribe_summarize\summarize_chatgpt.py, takes videos from ccg_videos_new, transcribes and summarizes them, moves them into ccg_video_complete
+- upload_script\ccg_upload_openai_new_py, takes videos from ccg_videos_complete and moves them into ccg_videos_old, once uploaded to YouTube
 
 ### Pre-requisites
 - openAI API key

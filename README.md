@@ -2,7 +2,7 @@
 Tools to download videos from a repository, transcribe them using whisper, summarise the transcription using OpenAI's chatGPT API, before uploading the summary and the video to YouTube.
 
 ### There are two lists:
-- Official list of videos provided by a W3C CCG standards committee editor or chair (updated 
+- Official list of videos provided by a W3C CCG standards committee editor or chair (updated)
 - List of videos already scrapped.
 Both lists can be found in the download_script folder. 
 

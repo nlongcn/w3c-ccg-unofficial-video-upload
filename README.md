@@ -1,6 +1,11 @@
 # w3c-ccg-unofficial-video-upload
 Tools to download videos from a repository, transcribe them using whisper, summarise the transcription using OpenAI's chatGPT API, before uploading the summary and the video to YouTube.
 
+## Bulk Summarization and Upload
+If this is the first time you are creating the channel then you need to summarize existing transcripts and bulk upload to YouTube.
+Videos can be found on a shared drive. Contact the ccg administrator for that location.
+Add videos to the ccg_videos_new directory
+
 ### There are two lists:
 - Official list of videos provided by a W3C CCG standards committee editor or chair (updated)
 - List of videos already scrapped.

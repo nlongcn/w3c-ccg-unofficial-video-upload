@@ -15,7 +15,7 @@ from langchain.chains.summarize import load_summarize_chain
 import warnings
 import shutil
 
-OPENAI_API_KEY = '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'
+OPENAI_API_KEY = 'your-key'
 MIN_WORDS = 20
 MAX_WORDS = 80
 CHUNK_LENGTH = 5

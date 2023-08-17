@@ -5,41 +5,60 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from google.auth.transport.requests import Request
 import shutil
+import re
 
 # Directories and SCOPES definition
-current_directory = os.getcwd()
-videos_directory = os.path.join(current_directory, 'ccg_videos_new', 'ccg_videos_complete')
+
+import os
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+while os.path.basename(script_dir) != 'w3c-ccg-unofficial-video-upload' and script_dir != os.path.dirname(script_dir):
+    script_dir = os.path.dirname(script_dir)
+
+# At this point, script_directory is either the 'w3c-ccg-unofficial-video-upload' directory or the root directory if not found
+if os.path.basename(script_dir) != 'w3c-ccg-unofficial-video-upload':
+    print("'w3c-ccg-unofficial-video-upload' directory not found in the path hierarchy of the script.")
+    exit(1)
+
+videos_directory = os.path.join(script_dir, 'ccg_videos_new', 'ccg_videos_complete')
 print(f"Expected watching directory: {videos_directory}")
-if not os.path.exists(videos_directory):
-    print(f"The directory {videos_directory} does not exist!")
-    exit()  # Terminate the script
+summaries_folder = os.path.join(script_dir, 'summaries')
+print(f"Expected summaries directory: {summaries_folder}")
 
 SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
 
-
 def get_authenticated_service():
+    token_path = os.path.join(script_dir, 'token.pickle')
+    client_secrets_path = os.path.join(script_dir, 'client_secrets.json')
+    
+    # Print expected paths
+    print(f"Expected token path: {token_path}")
+    print(f"Expected client secrets path: {client_secrets_path}")
+
     creds = None
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token:
+    if os.path.exists(token_path):
+        with open(token_path, 'rb') as token:
             creds = pickle.load(token)
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file('client_secrets.json', SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file(client_secrets_path, SCOPES)
             creds = flow.run_local_server(port=8080)
-        with open('token.pickle', 'wb') as token:
+        with open(token_path, 'wb') as token:
             pickle.dump(creds, token)
     return build('youtube', 'v3', credentials=creds)
-
 
 def upload_video_to_youtube(file_path):
     # Get the filename without extension
     base_name = os.path.basename(file_path)
     file_name_without_extension = os.path.splitext(base_name)[0]
+    video_title = re.sub(r'(?<=[^\d])-(?=[^\d])', ' ', file_name_without_extension)
 
     # Determine the path to the related summary file
-    summary_file_path = os.path.join(current_directory, 'summaries', f"{file_name_without_extension}_summary.txt")
+    summary_file_path = os.path.join(script_dir, 'summaries', f"{file_name_without_extension}_transcript_summary.txt")
+    print(f"Expected summaries directory: {summary_file_path}")
 
     # Default description if the summary file does not exist or fails to read
     description = "Test Description"
@@ -50,12 +69,20 @@ def upload_video_to_youtube(file_path):
             description = f.read().strip()
         print(f"Description for {file_name_without_extension}: {description}")
 
-    # Check if the description is still the default. If yes, prompt the user
+    # Check if the description is still the default. If yes, skip uploading the video and move it to ccg_video_old_too_short directory.
     if description == "Test Description":
-        proceed = input(f"No summary found for {file_name_without_extension}. Do you want to proceed with the default description? (yes/no): ")
-        if proceed.lower() != 'yes':
-            print(f"Skipped upload for {file_name_without_extension}.")
-            return
+        too_short_directory = os.path.join(script_dir, 'ccg_videos_old', 'ccg_video_old_too_short')
+        # Ensure the destination directory exists
+        if not os.path.exists(too_short_directory):
+            os.makedirs(too_short_directory)
+        
+        new_file_path = os.path.join(too_short_directory, os.path.basename(file_path))
+        
+        # Move the file
+        shutil.move(file_path, new_file_path)
+        print(f"This {file_name_without_extension} was too short to upload, and did not have a summary.")
+        print(f"Moved {file_path} to {new_file_path}")
+        return
 
     youtube = get_authenticated_service()
     print("Uploading: " + file_path)
@@ -65,10 +92,10 @@ def upload_video_to_youtube(file_path):
             "snippet": {
                 "categoryId": "22",
                 "description": description,
-                "title": base_name
+                "title": video_title
             },
             "status": {
-                "privacyStatus": "private",
+                "privacyStatus": "public",
                 "embeddable": True,
                 "license": "youtube",
                 "publicStatsViewable": True
@@ -80,7 +107,7 @@ def upload_video_to_youtube(file_path):
     print(response)
 
     # This is the new code to move the uploaded video to the 'ccg_videos_old' directory.
-    old_videos_directory = os.path.join(current_directory, 'ccg_videos_old')
+    old_videos_directory = os.path.join(script_dir, 'ccg_videos_old')
     new_file_path = os.path.join(old_videos_directory, os.path.basename(file_path))
     
     # Ensure the destination directory exists

@@ -9,6 +9,28 @@ import logging
 # downloading new videos. All videos in the 'ccg_videos_new' folder will be 
 # processed (transcribed and summarized)
 
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+while os.path.basename(script_dir) != 'w3c-ccg-unofficial-video-upload' and script_dir != os.path.dirname(script_dir):
+    script_dir = os.path.dirname(script_dir)
+
+# At this point, script_directory is either the 'w3c-ccg-unofficial-video-upload' directory or the root directory if not found
+if os.path.basename(script_dir) != 'w3c-ccg-unofficial-video-upload':
+    print("'w3c-ccg-unofficial-video-upload' directory not found in the path hierarchy of the script.")
+    exit(1)
+
+# Directories
+current_directory = script_dir
+
+# New videos directory
+new_videos_directory = os.path.join(current_directory, 'ccg_videos_new')
+print(f"Expected dowload directory: {new_videos_directory}")
+if not os.path.exists(new_videos_directory):
+    os.makedirs(new_videos_directory)
+
+# Old videos directory
+old_videos_directory = os.path.join(current_directory, 'ccg_videos_old')
+
 # Set up logging
 logging.basicConfig(filename='error_log.txt', level=logging.ERROR)
 
@@ -16,7 +38,7 @@ logging.basicConfig(filename='error_log.txt', level=logging.ERROR)
 known_video_names = set()
 
 # Ensure both files exist, else stop execution
-script_dir = os.path.dirname(os.path.realpath(__file__))
+script_dir = os.path.dirname(os.path.abspath(__file__))
 for filename in ['ccg-all-video-names.txt', 'ccg-all-video-names-scrapped.txt']:
     file_path = os.path.join(script_dir, filename)
     if not os.path.exists(file_path):
@@ -24,6 +46,16 @@ for filename in ['ccg-all-video-names.txt', 'ccg-all-video-names-scrapped.txt']:
         exit()
     with open(file_path, 'r') as f:
         known_video_names.update(f.read().splitlines())
+
+# Add all the videos from the 'ccg_videos_old' directory to the known_video_names set
+if os.path.exists(old_videos_directory):
+    for video in os.listdir(old_videos_directory):
+        if video.endswith('.mp4'):
+            known_video_names.add(video)
+else:
+    print(f"'ccg_videos_old' directory not found at {old_videos_directory}.")
+    # Optionally, you can stop the execution if the old_videos_directory is not found.
+    # exit()
 
 # URL of the page we want to scrape
 url = "https://w3c-ccg.github.io/meetings/"
@@ -44,10 +76,10 @@ print(f"Number of lines found: {len(lines)}")
 # Base URL for the video files
 base_url = "https://meet.w3c-ccg.org/archives/w3c-ccg"
 
-# Create a directory to store videos
-directory = "ccg_videos_new"
-if not os.path.exists(directory):
-    os.makedirs(directory)
+# # Create a directory to store videos
+# directory = "ccg_videos_new"
+# if not os.path.exists(directory):
+#     os.makedirs(directory)
 
 # Regular expression to match a valid meeting line
 regex = re.compile(r'^Meeting for \d{4}-\d{2}-\d{2}(-.*)?$')
@@ -82,7 +114,7 @@ for video_url in video_urls:
         continue
 
     # Path to store the video
-    output_path = os.path.join(directory, video_name)
+    output_path = os.path.join(new_videos_directory, video_name)
 
     # Print the URL and output path
     print(f"URL: {video_url}")

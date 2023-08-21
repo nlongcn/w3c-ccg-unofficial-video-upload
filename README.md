@@ -18,7 +18,7 @@ List prevent duplicate downloads.
 - ccg_videos_old, videos that have been downloaded, transcribed, summarized and uploaded to youtube
 
 ### There are four scripts
-- download_script\ccg_download.py, downloads new videos into ccg_videos_new
+- download_script\ccg_download.py, downloads new videos into ccg_videos_new by scraping https://w3c-ccg.github.io/meetings/ for new video names.
 - transcribe_summarize\transcribe.py, transcribes new videos using openAi's whisper
 - transcribe_summarize\summarize_chatgpt.py, takes transcripts from the transcripts folder, checks the are longer than 100 words and then summarizes them. Short transcripts are not summarized and the relared video is moved into ccg_videos_old.
 - upload_script\ccg_upload_openai_new_py, takes videos from ccg_videos_transcribed, uploads them to YouTube with the summary and moves the video into ccg_videos_old

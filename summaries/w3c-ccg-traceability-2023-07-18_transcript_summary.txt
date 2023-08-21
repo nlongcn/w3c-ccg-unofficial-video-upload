@@ -1,0 +1,3 @@
+
+
+At a meeting, a team of developers discussed and approved a pull request to fix a conformance issue with an interrupt test. They discussed changes to the trace vocab, content type, and specific room, as well as changes to the interops and performance suites. They also discussed the need to address interoperability issues with JWT and media types, and the need to refer to specific media types instead of VC JWT. They discussed the possibility of verifying credentials with a JSON representation, and the need for support for derivative media types and assignments. Lastly, they discussed protocols for a meeting, such as recording, posting minutes, and kicking out participants.

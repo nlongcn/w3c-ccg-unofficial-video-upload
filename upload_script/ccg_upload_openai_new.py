@@ -21,7 +21,7 @@ if os.path.basename(script_dir) != 'w3c-ccg-unofficial-video-upload':
     print("'w3c-ccg-unofficial-video-upload' directory not found in the path hierarchy of the script.")
     exit(1)
 
-videos_directory = os.path.join(script_dir, 'ccg_videos_new', 'ccg_videos_complete')
+videos_directory = os.path.join(script_dir, 'ccg_videos_new', 'ccg_videos_transcribed')
 print(f"Expected watching directory: {videos_directory}")
 summaries_folder = os.path.join(script_dir, 'summaries')
 print(f"Expected summaries directory: {summaries_folder}")

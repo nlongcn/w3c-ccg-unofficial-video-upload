@@ -39,7 +39,7 @@ def transcribe_videos(video_files, src_directory, model, transcripts_folder):
             f.write(transcription)
 
         # Move the video to the 'ccg_videos' folder
-        destination_folder = os.path.join(src_directory, 'ccg_videos_complete')
+        destination_folder = os.path.join(src_directory, 'ccg_videos_transcribed')
         if not os.path.exists(destination_folder):
             os.makedirs(destination_folder)
         
@@ -61,7 +61,7 @@ def transcribe_videos(video_files, src_directory, model, transcripts_folder):
 
                     # Removing the related video
                     video_name = transcript_file.replace('_transcript.txt', '.mp4') # Assuming the naming convention is consistent
-                    video_path = os.path.join(src_directory, 'ccg_videos_complete', video_name)
+                    video_path = os.path.join(src_directory, 'ccg_videos_transcribed', video_name)
                     if os.path.exists(video_path):
                         os.remove(video_path)
                         print(f"Deleted corresponding video {video_name}.")

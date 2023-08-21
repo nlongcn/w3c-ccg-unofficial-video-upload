@@ -350,7 +350,7 @@ def summarize_stage_2(stage_1_outputs, topics, summary_num_words = 250):
   
   return out
 
-### Transcribe and summarize each video, then move it to the 'ccg_videos_complete' folder
+### Transcribe and summarize each video, then move it to the 'ccg_videos_transcribed' folder
 def process_single_video(video_file, src_directory, model, transcripts_folder, summaries_folder):
     # 1. Transcribe the video
     video_path = os.path.join(src_directory, video_file)
@@ -360,14 +360,14 @@ def process_single_video(video_file, src_directory, model, transcripts_folder, s
     # 2. Summarize the transcription
     process_transcription(transcription, video_path, transcripts_folder, summaries_folder)
 
-    # 3. Move the video to the 'ccg_videos_complete' folder
-    destination_folder = os.path.join(src_directory, 'ccg_videos_complete')
+    # 3. Move the video to the 'ccg_videos_transcribed' folder
+    destination_folder = os.path.join(src_directory, 'ccg_videos_transcribed')
     if not os.path.exists(destination_folder):
         os.makedirs(destination_folder)
     
     destination_path = os.path.join(destination_folder, video_file)
     move(video_path, destination_path)
-    print(f"Video {video_file} has been processed and moved to 'ccg_videos_complete'.")
+    print(f"Video {video_file} has been processed and moved to 'ccg_videos_transcribed'.")
 
 ### Summarization steps
 def process_transcription(transcription, video_path, transcripts_folder, summaries_folder):

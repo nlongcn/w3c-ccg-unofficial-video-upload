@@ -15,7 +15,7 @@ from langchain.chains.summarize import load_summarize_chain
 import warnings
 import shutil
 
-OPENAI_API_KEY = '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'
+OPENAI_API_KEY = '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'
 MIN_WORDS = 20
 MAX_WORDS = 80
 CHUNK_LENGTH = 5
@@ -159,6 +159,7 @@ def summarize_stage_1(chunks_text):
   map_llm_chain = LLMChain(llm = map_llm, prompt = map_prompt)
   map_llm_chain_input = [{'text': t} for t in chunks_text]
   # Run the input through the LLM chain (works in parallel)
+  
   map_llm_chain_results = map_llm_chain.apply(map_llm_chain_input)
 
   stage_1_outputs = parse_title_summary_results([e['text'] for e in map_llm_chain_results])
@@ -350,11 +351,59 @@ def summarize_stage_2(stage_1_outputs, topics, summary_num_words = 250):
   return out
 
 # Process and summarize each transcript
+
+def word_count(text):
+    """Returns the word count of the given text."""
+    return len(text.split())
+
+def move_too_short_files(transcript_file, script_dir, transcripts_folder):
+    """Moves too-short transcription and its corresponding video to their respective folders."""
+    too_short_video_folder = os.path.join(script_dir, 'ccg_videos_old', 'ccg_video_old_too_short')
+    too_short_transcript_folder = os.path.join(transcripts_folder, 'transcripts_too_short')
+    
+    # Ensuring folders exist
+    for folder in [too_short_video_folder, too_short_transcript_folder]:
+        os.makedirs(folder, exist_ok=True)  # use exist_ok=True to avoid error if directory exists
+
+    video_name = transcript_file.replace("_transcript.txt", ".mp4")
+    video_path = os.path.join(script_dir, 'ccg_videos_new', 'ccg_videos_transcribed', video_name)
+
+    # Moving files only if they exist
+    if os.path.exists(video_path):
+        shutil.move(video_path, too_short_video_folder)
+    if os.path.exists(os.path.join(transcripts_folder, transcript_file)):
+        shutil.move(os.path.join(transcripts_folder, transcript_file), too_short_transcript_folder)
+
+import os
+
 def process_single_transcript(transcript_file, transcripts_folder, summaries_folder):
-    with open(os.path.join(transcripts_folder, transcript_file), 'r') as f:
+    transcript_path = os.path.join(transcripts_folder, transcript_file)
+    
+    # Check if transcript file exists to avoid errors
+    if not os.path.exists(transcript_path):
+        print(f"Transcript file {transcript_file} does not exist. Skipping...")
+        return
+
+    # Construct the expected summary file path based on the transcript file's name
+    # Here, I'm assuming the summary file will have a '.summary' extension
+    summary_file = os.path.splitext(transcript_file)[0] + '.summary'
+    summary_path = os.path.join(summaries_folder, summary_file)
+
+    # Check if summary file already exists
+    if os.path.exists(summary_path):
+        print(f"Summary for {transcript_file} already exists. Skipping...")
+        return
+
+    with open(transcript_path, 'r') as f:
         transcription = f.read()
 
+    if word_count(transcription) < 100:
+        print(f"{transcript_file} is too short")
+        move_too_short_files(transcript_file, os.path.dirname(transcripts_folder), transcripts_folder)
+        return
+
     process_transcription(transcription, transcript_file, transcripts_folder, summaries_folder)
+
 
 ### Summarization steps
 def process_transcription(transcription, transcript_file, transcripts_folder, summaries_folder):
@@ -395,11 +444,18 @@ def process_transcription(transcription, transcript_file, transcripts_folder, su
 
 def move_transcript_to_old(transcript_file, transcripts_folder):
     old_transcripts_folder = os.path.join(transcripts_folder, 'old_transcripts')
+    transcript_path = os.path.join(transcripts_folder, transcript_file)
+    destination_path = os.path.join(old_transcripts_folder, transcript_file)
+
     if not os.path.exists(old_transcripts_folder):
         os.makedirs(old_transcripts_folder)
 
+    # If the destination file already exists, remove it first
+    if os.path.exists(destination_path):
+        os.remove(destination_path)
+
     # Move the transcript to the 'old_transcripts' folder
-    shutil.move(os.path.join(transcripts_folder, transcript_file), old_transcripts_folder)
+    shutil.move(transcript_path, old_transcripts_folder)
 
 def main():
     warnings.filterwarnings("ignore")
@@ -414,22 +470,8 @@ def main():
     if os.path.basename(script_dir) != 'w3c-ccg-unofficial-video-upload':
         print("'w3c-ccg-unofficial-video-upload' directory not found in the path hierarchy of the script.")
         exit(1)
-    
-   # Set directories (you'd need to define these)
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    # script_dir = os.getcwd()  # Gets the current working directory
-    
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-
-    while os.path.basename(script_dir) != 'w3c-ccg-unofficial-video-upload' and script_dir != os.path.dirname(script_dir):
-        script_dir = os.path.dirname(script_dir)
-
-    # At this point, script_directory is either the 'w3c-ccg-unofficial-video-upload' directory or the root directory if not found
-    if os.path.basename(script_dir) != 'w3c-ccg-unofficial-video-upload':
-        print("'w3c-ccg-unofficial-video-upload' directory not found in the path hierarchy of the script.")
-        exit(1)
-    
-    src_directory = os.path.join(script_dir, 'ccg_videos_new','ccg_videos_complete')
+  
+    src_directory = os.path.join(script_dir, 'ccg_videos_new','ccg_videos_transcribed')
     print(f"Expected video directory: {src_directory}")
     transcripts_folder = os.path.join(script_dir, 'transcripts')
     print(f"Expected transcripts directory: {transcripts_folder}")
@@ -441,6 +483,7 @@ def main():
     transcript_files = get_transcript_files(transcripts_folder)
 
     for current_transcript_index, transcript_file in enumerate(transcript_files):
+      print(f"File to be processed: {transcript_file}")
       process_single_transcript(transcript_file, transcripts_folder, summaries_folder)
       move_transcript_to_old(transcript_file, transcripts_folder)
       print(f"Processed transcript {current_transcript_index + 1} of {len(transcript_files)}")

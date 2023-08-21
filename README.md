@@ -13,20 +13,18 @@ Add videos to the ccg_videos_new directory
 - Official list of videos provided by a W3C CCG standards committee editor or chair (updated)
 - List of videos already scrapped.
   Both lists can be found in the download_script folder.
-  List prevent duplicate downloads.
 
 ### There are three folders for videos
 
-- ccg_videos_new, videos that have been downloaded but not yet transcribed
-- ccg_videos_new\ccg_videos_transcribed, videos that have been download and transcribed
-- ccg_videos_old, videos that have been downloaded, transcribed, summarized and uploaded to youtube
+- ccg_videos_new, videos that have been downloaded but not yet summarized
+- ccg_videos_new\ccg_videos_complete, videos that have been download, transcribed and summarised but not yet uploaded to youtube
+- ccg_videos_old, videos that have been downloaded, summarized and uploaded to youtube
 
-### There are four scripts
+### There are three scripts
 
-- download_script\ccg_download.py, downloads new videos into ccg_videos_new by scraping https://w3c-ccg.github.io/meetings/ for new video names.
-- transcribe_summarize\transcribe.py, transcribes new videos using openAi's whisper
-- transcribe_summarize\summarize_chatgpt.py, takes transcripts from the transcripts folder, checks the are longer than 100 words and then summarizes them. Short transcripts are not summarized and the relared video is moved into ccg_videos_old.
-- upload_script\ccg_upload_openai_new_py, takes videos from ccg_videos_transcribed, uploads them to YouTube with the summary and moves the video into ccg_videos_old
+- download_script\ccg_download.py, downloads new videos into ccg_videos_new
+- transcribe_summarize\summarize_chatgpt.py, takes videos from ccg_videos_new, transcribes and summarizes them, moves them into ccg_video_complete
+- upload_script\ccg_upload_openai_new_py, takes videos from ccg_videos_complete and moves them into ccg_videos_old, once uploaded to YouTube
 
 ### Pre-requisites
 

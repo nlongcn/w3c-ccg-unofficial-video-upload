@@ -1,3 +1,7 @@
+# A large chunk of this code comes from Issac Tham's Towards Data Science article:
+# https://towardsdatascience.com/summarize-podcast-transcripts-and-long-texts-better-with-nlp-and-ai-e04c89d3b2cb
+# https://github.com/thamsuppp/llm_summary_medium
+
 from datetime import datetime
 import pandas as pd
 import numpy as np

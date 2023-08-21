@@ -80,3 +80,11 @@ To create new credentials for your application using a new Google account, follo
    - Click `Save and Continue`, go through the next sections, and save your changes.
 
 With these steps completed, you should now have new credentials set up for your application with your new Google account. When you run your script, it will use the newly downloaded `client_secrets.json` file for authentication.
+
+## Credits
+
+A large chunk of this code comes from Issac Tham's Towards Data Science article:
+https://towardsdatascience.com/summarize-podcast-transcripts-and-long-texts-better-with-nlp-and-ai-e04c89d3b2cb
+
+And the following related repo:
+https://github.com/thamsuppp/llm_summary_medium
